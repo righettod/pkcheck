@@ -108,7 +108,7 @@ func main() {
 		var p string = <-comChannel
 		color.Green("\rPassphrase recovered (%v): %-50v", delay, p)
 	} else {
-		color.Yellow("\rPassphrase not recovered (%v)!%-50v", "")
+		color.Yellow("\rPassphrase not recovered (%v)!%-50v", delay, "")
 	}
 }
 
