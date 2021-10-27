@@ -12,6 +12,5 @@ for os in ${allOS[@]}; do
     fi
     bin_name="pkcheck-$GOOS-$GOARCH$GOEXE"
     go build -o build/$bin_name
-    ls -l build/$bin_name
     file build/$bin_name
 done
