@@ -6,6 +6,7 @@ package main
 import (
 	"crypto/x509"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -19,13 +20,15 @@ import (
 
 const exitErrorCode int = 1
 const exitKeyNotProtectedCode int = 2
+const enableDerivationOptionName string = "--enable-derivation"
 
 func main() {
 	fmt.Println("[+] check parameters...")
-	if len(os.Args) != 3 {
+	if len(os.Args) < 3 {
 		color.Red("Bad syntax!")
-		fmt.Printf("Call syntax:\n\t%v {PASSPHRASE_DICTIONARY_FILE_PATH} {KEY_PEM_FILE_PATH}\n", filepath.Base(os.Args[0]))
+		fmt.Printf("Call syntax:\n\t%v {PASSPHRASE_DICTIONARY_FILE_PATH} {KEY_PEM_FILE_PATH} [%v]\n", filepath.Base(os.Args[0]), enableDerivationOptionName)
 		fmt.Printf("Call example:\n\t%v passphrases.txt pk-key-ec.txt\n", filepath.Base(os.Args[0]))
+		fmt.Printf("\t%v passphrases.txt pk-key-ec.txt %v\n", filepath.Base(os.Args[0]), enableDerivationOptionName)
 		os.Exit(exitErrorCode)
 	}
 	var passphraseDictFile string = os.Args[1]
@@ -66,6 +69,24 @@ func main() {
 		os.Exit(exitKeyNotProtectedCode)
 	}
 	fmt.Println("Key decoded and is protected by a passphrase.")
+	if len(os.Args) == 4 && os.Args[3] == enableDerivationOptionName {
+		fmt.Println("[+] Apply derivation operations on passphrases loaded...")
+		var newPassphrases, errDerivation = derivatePassphraseCollection(passphrases)
+		if errDerivation != nil {
+			color.Red("Error during the derivation of the passphrases: %v", errDerivation.Error())
+			os.Exit(exitErrorCode)
+		}
+		passphrases = newPassphrases
+		fmt.Printf("%v passphrases loaded after the derivation.\n", len(passphrases))
+	}
+	fmt.Println("[+] Remove duplicates passphrases...")
+	var finalPassphrases, errCleanup = removeDuplicatePassphrases(passphrases)
+	if errCleanup != nil {
+		color.Red("Error during the cleanup of the passphrases: %v", errCleanup.Error())
+		os.Exit(exitErrorCode)
+	}
+	passphrases = finalPassphrases
+	fmt.Printf("%v passphrases loaded after the derivation.\n", len(passphrases))
 	fmt.Println("[+] Start brute force operations...")
 	var valueToTest string
 	comChannel := make(chan string, 1)
@@ -89,6 +110,49 @@ func main() {
 	} else {
 		color.Yellow("\rPassphrase not recovered (%v)!%-50v", "")
 	}
+}
+
+func derivatePassphraseCollection(passphrases []string) (updatedPassphrases []string, err error) {
+	if len(passphrases) == 0 {
+		return nil, errors.New("source list of passphrases cannot be empty")
+	}
+	//Map with derivation rules: KEY is the source character and VALUE is the replacement character
+	var derivationRules = map[string]string{
+		"0": "@",
+		"l": "1",
+	}
+	//Apply derivations
+	updatedPassphrases = make([]string, 0, (len(passphrases)*len(derivationRules))+(len(passphrases)*2))
+	var updatedPassphrase string
+	for _, passphrase := range passphrases {
+		for key, value := range derivationRules {
+			updatedPassphrases = append(updatedPassphrases, strings.ReplaceAll(passphrase, key, value))
+		}
+		updatedPassphrase = passphrase
+		for key, value := range derivationRules {
+			updatedPassphrase = strings.ReplaceAll(updatedPassphrase, key, value)
+		}
+		updatedPassphrases = append(updatedPassphrases, updatedPassphrase)
+		updatedPassphrases = append(updatedPassphrases, passphrase)
+	}
+	return updatedPassphrases, nil
+
+}
+
+func removeDuplicatePassphrases(passphrases []string) (cleanedPassphrases []string, err error) {
+	if len(passphrases) == 0 {
+		return nil, errors.New("source list of passphrases cannot be empty")
+	}
+	//Use a map to achieve this because keys are not duplicated in such container
+	var keys = make(map[string]int)
+	for _, passphrase := range passphrases {
+		keys[passphrase] = 1
+	}
+	cleanedPassphrases = make([]string, 0, len(keys))
+	for key := range keys {
+		cleanedPassphrases = append(cleanedPassphrases, key)
+	}
+	return cleanedPassphrases, nil
 }
 
 func probePassphrase(passphrase string, keyContent *pem.Block, comChannel chan string, waitGroup *sync.WaitGroup) {
