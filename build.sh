@@ -16,3 +16,6 @@ for os in ${allOS[@]}; do
     go build -o build/$bin_name
     file build/$bin_name
 done
+cd build
+sha256sum * > hashes.txt
+cd ..
