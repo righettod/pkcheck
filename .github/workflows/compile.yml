@@ -18,7 +18,7 @@ jobs:
         run: go test -v
       - name: Build
         run: bash build.sh
-      - name: Release all compiled files
+      - name: Release
         uses: marvinpinto/action-automatic-releases@v1.2.1
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
