@@ -1,7 +1,5 @@
 # Description
 
-[![Cross-Compile the program](https://github.com/righettod/pkcheck/actions/workflows/compile.yml/badge.svg?branch=main)](https://github.com/righettod/pkcheck/actions/workflows/compile.yml)
-
 This project provide a program brute forcing the passphrase of a private key (EC/RSA).
 
 :information_source: This project was created to allow me to learn the [Go](https://golang.org) technology.
@@ -18,6 +16,8 @@ PS> pkcheck.exe passphrases.txt pk-key-ec.txt
 Go >= [1.17](https://golang.org/dl/)
 
 # Release
+
+[![Cross-Compile the program](https://github.com/righettod/pkcheck/actions/workflows/compile.yml/badge.svg?branch=main)](https://github.com/righettod/pkcheck/actions/workflows/compile.yml)
 
 The binary files for Windows/Linux/Mac are compiled at each commit.
 
