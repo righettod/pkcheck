@@ -6,9 +6,12 @@ This project provide a program brute forcing the passphrase of a private key (EC
 
 # Usage
 
-```powershell
-PS> pkcheck.exe {PASSPHRASE_DICTIONARY_FILE_PATH} {KEY_PEM_FILE_PATH}
-PS> pkcheck.exe passphrases.txt pk-key-ec.txt
+```text
+Call syntax:
+        pkcheck.exe {PASSPHRASE_DICTIONARY_FILE_PATH} {KEY_PEM_FILE_PATH} [--enable-derivation]
+Call example:
+        pkcheck.exe passphrases.txt pk-key-ec.txt
+        pkcheck.exe passphrases.txt pk-key-ec.txt --enable-derivation
 ```
 
 # Requirements
