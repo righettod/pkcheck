@@ -9,6 +9,8 @@ for os in ${allOS[@]}; do
     if [ "$os" == "windows" ];
     then
         export GOEXE=.exe
+    else
+        unset GOEXE 
     fi
     bin_name="pkcheck-$GOOS-$GOARCH$GOEXE"
     go build -o build/$bin_name
