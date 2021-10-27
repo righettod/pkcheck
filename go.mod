@@ -1,4 +1,4 @@
-module righettod/pkcheck
+module github.com/righettod/pkcheck
 
 go 1.17
 
