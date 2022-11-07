@@ -1,6 +1,6 @@
 # Description
 
-> **Note**: This project was created to allow me to learn the [Go](https://golang.org) technology.
+> **Note**: This project was created to allow me to learn/discover the [Go](https://golang.org) technology.
 
 This project provide a program brute forcing the passphrase of a private key (EC/RSA).
 
