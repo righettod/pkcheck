@@ -1,8 +1,8 @@
 # Description
 
-This project provide a program brute forcing the passphrase of a private key (EC/RSA).
+> **Note**: This project was created to allow me to learn the [Go](https://golang.org) technology.
 
-:information_source: This project was created to allow me to learn the [Go](https://golang.org) technology.
+This project provide a program brute forcing the passphrase of a private key (EC/RSA).
 
 # Usage
 
